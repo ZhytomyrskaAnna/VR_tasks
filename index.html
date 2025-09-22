@@ -9,18 +9,23 @@
   </head>
   <body>
     <a-scene>
+      <a-entity camera look-controls wasd-controls position="0 1.6 0">
+        <a-cursor></a-cursor>
+      </a-entity>
       <!-- Застосовуємо наш новий компонент до куба. Він буде обертатись зі швидкістю за замовчуванням (1) -->
-      <a-box position="-2 1.6 -3.5" color="#4CC3D9" self-rotation></a-box>
+      <a-box position="-2 1.6 -3.5" color="#4CC3D9" self-rotation-with-axis="speed : 10" toggle-visibility-on-click></a-box>
 
       <!-- Застосовуємо компонент до сфери і передаємо власну швидкість -->
-      <a-sphere position="0 1.6 -3.5" color="#EF2D5E" self-rotation="speed: 0.5"></a-sphere>
+      <a-sphere position="0 1.6 -3.5" color="#EF2D5E" self-rotation-with-axis="speed: -30 axis: 0 1 0"></a-sphere>
 
       <!-- Застосовуємо компонент до додекаедра з іншою швидкістю -->
-      <a-dodecahedron position="2 1.6 -3.5" color="#FFC65D" self-rotation="speed: -2"></a-dodecahedron>
+      <a-dodecahedron position="2 1.6 -3.5" color="#FFC65D" self-rotation-with-axis="speed: -20 axis: 1 0 0 " look-at-camera ></a-dodecahedron>
 
       <a-plane position="0 0 -4" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
       <a-sky color="#ECECEC"></a-sky>
+      <a-camera ></a-camera>
     </a-scene>
   </body>
 </html>
+
 
