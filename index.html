@@ -2,30 +2,55 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Практична робота №4: Власні компоненти</title>
+    <title>Практична робота №5: Асети та текстури</title>
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-    <!-- ПІДКЛЮЧАЄМО НАШ ФАЙЛ З КОМПОНЕНТАМИ -->
-    <script src="components.js"></script>
+    <script>
+      // Створюємо простий компонент для відтворення відео по кліку
+      AFRAME.registerComponent('play-on-click', {
+        init: function () {
+          this.el.addEventListener('click', () => {
+            // 'this.el' - це елемент, до якого прикріплений компонент (наш відеоекран)
+            // Отримуємо ID відео з атрибута src
+            var videoEl = document.querySelector(this.el.getAttribute('src'));
+            if (videoEl.paused) {
+              videoEl.play();
+            } else {
+              videoEl.pause();
+            }
+          });
+        }
+      });
+    </script>
   </head>
   <body>
     <a-scene>
-      <a-entity camera look-controls wasd-controls position="0 1.6 0">
+      <!-- 1. Система управління асетами. Всі ресурси оголошуються тут -->
+      <a-assets>
+        <img id="woodTexture" src="assets/wood.jpg">
+        <img id="panorama" src="assets/pano.jpg">
+        <video id="worldVideo" autoplay loop="true" src="assets/video.mp4"></video>
+      </a-assets>
+
+      <!-- Додаємо камеру та курсор для інтерактивності -->
+      <a-camera>
         <a-cursor></a-cursor>
-      </a-entity>
-      <!-- Застосовуємо наш новий компонент до куба. Він буде обертатись зі швидкістю за замовчуванням (1) -->
-      <a-box position="-2 1.6 -3.5" color="#4CC3D9" self-rotation-with-axis="speed : 10" toggle-visibility-on-click></a-box>
+      </a-camera>
 
-      <!-- Застосовуємо компонент до сфери і передаємо власну швидкість -->
-      <a-sphere position="0 1.6 -3.5" color="#EF2D5E" self-rotation-with-axis="speed: -30 axis: 0 1 0"></a-sphere>
+      <!-- 2. Створюємо "дерев'яний" ящик. -->
+      <!-- В атрибут 'src' ми передаємо ID текстури з <a-assets> -->
+      <a-box position="-1 1 -3" rotation="20 45 0" src="#woodTexture"></a-box>
 
-      <!-- Застосовуємо компонент до додекаедра з іншою швидкістю -->
-      <a-dodecahedron position="2 1.6 -3.5" color="#FFC65D" self-rotation-with-axis="speed: -20 axis: 1 0 0 " look-at-camera ></a-dodecahedron>
+      <!-- 3. Створюємо "відеоекран" -->
+      <!-- В 'src' передаємо ID відео. Додаємо наш компонент 'play-on-click' -->
+      <a-plane position="1 1.5 -4" width="2" height="1.125" src="#worldVideo" play-on-click></a-plane>
 
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
-      <a-sky color="#ECECEC"></a-sky>
-      <a-camera ></a-camera>
+      <!-- 4. Використовуємо 360° фото як фон -->
+      <!-- Замість color="", ми використовуємо src="" з ID нашого панорамного фото -->
+      <a-sky src="#panorama"></a-sky>
+
     </a-scene>
   </body>
 </html>
+
 
 
