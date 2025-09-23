@@ -15,11 +15,40 @@
             if (videoEl.paused) {
               videoEl.play();
             } else {
-              videoEl.pause();
+
             }
           });
         }
       });
+      AFRAME.registerComponent('play-button', {
+      init: function () {
+      this.el.addEventListener('click', () => {
+        console.log('Play button clicked');
+        const video = document.querySelector('#worldVideo');
+        video.play();
+      });
+    }
+  });
+
+  // Компонент для паузи відео
+      AFRAME.registerComponent('pause-button', {
+      init: function () {
+      this.el.addEventListener('click', () => {
+        console.log('Play button clicked');
+        const video = document.querySelector('#worldVideo');
+        video.pause();
+      });
+    }
+  });
+
+  AFRAME.registerComponent('portal-switch', {
+    init: function () {
+      this.el.addEventListener('mouseenter', () => {
+        const sky = document.querySelector('a-sky');
+        sky.setAttribute('src', '#woodNormal'); // змінюємо фон
+      });
+    }
+  });
     </script>
   </head>
   <body>
@@ -28,6 +57,7 @@
       <a-assets>
         <img id="woodTexture" src="assets/wood.jpg">
         <img id="panorama" src="assets/pano.jpg">
+        <img id="woodNormal" src="assets/wood_normal_map.jpg">
         <video id="worldVideo" autoplay loop="true" src="assets/video.mp4"></video>
       </a-assets>
 
@@ -38,7 +68,12 @@
 
       <!-- 2. Створюємо "дерев'яний" ящик. -->
       <!-- В атрибут 'src' ми передаємо ID текстури з <a-assets> -->
-      <a-box position="-1 1 -3" rotation="20 45 0" src="#woodTexture"></a-box>
+      <a-box position="-1 1 -3" rotation="20 45 0" material="src: #woodTexture; roughness: 0.8; metalness: 0.1; normalMap: #woodNormal"></a-box>
+      <!-- Кнопка "Play" -->
+      <a-box position="0.5 0.5 -3.5" depth="0.2" height="0.2" width="0.2" color="green" play-button></a-box>
+
+      <!-- Кнопка "Pause" -->
+      <a-box position="1 0.5 -3.5" depth="0.2" height="0.2" width="0.2" color="red" pause-button></a-box>
 
       <!-- 3. Створюємо "відеоекран" -->
       <!-- В 'src' передаємо ID відео. Додаємо наш компонент 'play-on-click' -->
@@ -47,6 +82,7 @@
       <!-- 4. Використовуємо 360° фото як фон -->
       <!-- Замість color="", ми використовуємо src="" з ID нашого панорамного фото -->
       <a-sky src="#panorama"></a-sky>
+      <a-ring position="0 4 -3" radius-inner="0.3" radius-outer="0.5" color="blue" portal-switch></a-ring>
 
     </a-scene>
   </body>
