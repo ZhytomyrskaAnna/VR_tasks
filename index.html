@@ -1,92 +1,85 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
-    <title>Практична робота №5: Асети та текстури</title>
-    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <title>Інтерактивна 3D-модель</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.1.0/dist/aframe-extras.min.js"></script>
     <script>
-      // Створюємо простий компонент для відтворення відео по кліку
-      AFRAME.registerComponent('play-on-click', {
-        init: function () {
-          this.el.addEventListener('click', () => {
-            // 'this.el' - це елемент, до якого прикріплений компонент (наш відеоекран)
-            // Отримуємо ID відео з атрибута src
-            var videoEl = document.querySelector(this.el.getAttribute('src'));
-            if (videoEl.paused) {
-              videoEl.play();
-            } else {
+      // Компонент для керування анімаціями без конфліктів
+      AFRAME.registerComponent('jump-and-resume', {
+          init: function () {
+              const el = this.el;
+              const originalPosition = el.getAttribute('position');
 
-            }
-          });
-        }
+              el.addEventListener('click', function () {
+                  // Тимчасово призупиняємо основну анімацію
+                  const mixer = el.components['animation-mixer'];
+                  if (mixer) mixer.pause();
+
+                  // Запускаємо анімацію стрибка
+                  el.setAttribute('animation', {
+                      property: 'position',
+                      to: `${originalPosition.x} ${originalPosition.y + 0.5} ${originalPosition.z}`,
+                      dur: 400,
+                      dir: 'alternate',
+                      loop: 1,
+                      // Коли анімація стрибка закінчиться...
+                      endEvents: 'animationcomplete'
+                  });
+              });
+
+              // Слухаємо подію завершення анімації та відновлюємо основну
+              el.addEventListener('animationcomplete', function () {
+                  const mixer = el.components['animation-mixer'];
+                  if (mixer) mixer.play();
+              });
+          }
       });
-      AFRAME.registerComponent('play-button', {
-      init: function () {
-      this.el.addEventListener('click', () => {
-        console.log('Play button clicked');
-        const video = document.querySelector('#worldVideo');
-        video.play();
-      });
-    }
-  });
+  </script>
+</head>
+<body>
+    <a-scene shadow="type: pcfsoft; castShadow: true;">
+        <a-assets>
+            <a-asset-item id="dragoniteModel" src="assets/dragonite_official.glb"></a-asset-item>
+        </a-assets>
 
-  // Компонент для паузи відео
-      AFRAME.registerComponent('pause-button', {
-      init: function () {
-      this.el.addEventListener('click', () => {
-        console.log('Play button clicked');
-        const video = document.querySelector('#worldVideo');
-        video.pause();
-      });
-    }
-  });
+        <a-light type="directional" 
+        position="-5 5 -5" 
+        intensity="1.5" 
+        castShadow="true"
+        shadow-mapSize="1024 1024"
+        shadow-camera-near="0.5"
+        shadow-camera-far="20"
+        shadow-camera-left="-5"
+        shadow-camera-right="5"
+        shadow-camera-bottom="-5"
+        shadow-camera-top="5"></a-light>
+        <a-light type="ambient" color="#888" ></a-light>
 
-  AFRAME.registerComponent('portal-switch', {
-    init: function () {
-      this.el.addEventListener('mouseenter', () => {
-        const sky = document.querySelector('a-sky');
-        sky.setAttribute('src', '#woodNormal'); // змінюємо фон
-      });
-    }
-  });
-    </script>
-  </head>
-  <body>
-    <a-scene>
-      <!-- 1. Система управління асетами. Всі ресурси оголошуються тут -->
-      <a-assets>
-        <img id="woodTexture" src="assets/wood.jpg">
-        <img id="panorama" src="assets/pano.jpg">
-        <img id="woodNormal" src="assets/wood_normal_map.jpg">
-        <video id="worldVideo" autoplay loop="true" src="assets/video.mp4"></video>
-      </a-assets>
+        <a-gltf-model src="#dragoniteModel"
+            position="0 0 -5"
+            scale="2 2 2"
+            animation-mixer="clip: pm0149_00_00_00300_roar01; loop: repeat;"
+            shadow="cast: true"
+            jump-and-resume></a-gltf-model>
 
-      <!-- Додаємо камеру та курсор для інтерактивності -->
-      <a-camera>
-        <a-cursor></a-cursor>
-      </a-camera>
+        <a-plane 
+            position="0 0 -5" 
+            rotation="-90 0 0" 
+            width="4" 
+            height="4" 
+            color="#7BC8A4" 
+            shadow="receive: true"
+        ></a-plane>
 
-      <!-- 2. Створюємо "дерев'яний" ящик. -->
-      <!-- В атрибут 'src' ми передаємо ID текстури з <a-assets> -->
-      <a-box position="-1 1 -3" rotation="20 45 0" material="src: #woodTexture; roughness: 0.8; metalness: 0.1; normalMap: #woodNormal"></a-box>
-      <!-- Кнопка "Play" -->
-      <a-box position="0.5 0.5 -3.5" depth="0.2" height="0.2" width="0.2" color="green" play-button></a-box>
-
-      <!-- Кнопка "Pause" -->
-      <a-box position="1 0.5 -3.5" depth="0.2" height="0.2" width="0.2" color="red" pause-button></a-box>
-
-      <!-- 3. Створюємо "відеоекран" -->
-      <!-- В 'src' передаємо ID відео. Додаємо наш компонент 'play-on-click' -->
-      <a-plane position="1 1.5 -4" width="2" height="1.125" src="#worldVideo" play-on-click></a-plane>
-
-      <!-- 4. Використовуємо 360° фото як фон -->
-      <!-- Замість color="", ми використовуємо src="" з ID нашого панорамного фото -->
-      <a-sky src="#panorama"></a-sky>
-      <a-ring position="0 4 -3" radius-inner="0.3" radius-outer="0.5" color="blue" portal-switch></a-ring>
-
+        <a-sky color="#ECECEC"></a-sky>
+        <a-entity camera position="0 1.6 0"></a-entity>
+        <a-camera>
+          <a-cursor></a-cursor>
+        </a-camera>
     </a-scene>
-  </body>
+</body>
 </html>
-
 
 
