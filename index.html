@@ -5,6 +5,8 @@
     <title>Інтерактивна 3D-модель</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.1.0/dist/aframe-extras.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
     <script>
       // Компонент для керування анімаціями без конфліктів
       AFRAME.registerComponent('jump-and-resume', {
@@ -57,12 +59,13 @@
         shadow-camera-top="5"></a-light>
         <a-light type="ambient" color="#888" ></a-light>
 
-        <a-gltf-model src="#dragoniteModel"
+            <a-marker><a-gltf-model src="#dragoniteModel"
             position="0 0 -5"
             scale="2 2 2"
             animation-mixer="clip: pm0149_00_00_00300_roar01; loop: repeat;"
             shadow="cast: true"
             jump-and-resume></a-gltf-model>
+            </a-marker>
 
         <a-plane 
             position="0 0 -5" 
